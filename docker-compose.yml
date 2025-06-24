@@ -1,0 +1,30 @@
+version: '3.9'
+services:
+  db:
+    image: postgres:15
+    environment:
+      POSTGRES_USER: avito
+      POSTGRES_PASSWORD: avito
+      POSTGRES_DB: avito_helper
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  browser:
+    image: mcr.microsoft.com/playwright:v1.41.2-jammy
+    tty: true
+
+  app:
+    build: .
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - browser
+    volumes:
+      - .:/app
+    command: ["python", "-m", "avito_helper_lite.app.gui.main_window"]
+
+volumes:
+  postgres_data:
